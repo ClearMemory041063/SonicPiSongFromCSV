@@ -1,0 +1,79 @@
+# playsongSyn1tos.txt
+# split out the octave in the CSV file
+# so the CSV file has three columns octave, tone, time
+# this allows us to add an octaveoffset and change the ocatave
+# on the fly
+
+# we could add amp and pan as well
+
+# This program reads a song from a comma separated file (CSV)
+# and plays the song using a Sonic Pi sythesiser
+
+# Ruby is the computer language that Sonic Pi uses
+# load library in to Ruby to read CSV files
+require 'csv'
+
+# point to the song file
+
+songfile="c:/home/songs/freejaq2.csv"
+
+#read the csv file into an array of Ruby hashes
+song = Array.new
+CSV.foreach(songfile, { encoding: "UTF-8", headers: true, header_converters: :symbol, converters: :all}) do |row|
+  song << row.to_hash
+end
+#puts song
+
+
+# a variable to count music bars or measures
+barcount=0
+barcnt=0
+
+# setup tempo variable
+tempo=1.0 #normal
+#tempo=0.5 #faster
+#tempo=2.0 #slower
+
+#setup octave shift
+octaveshift =-1
+
+
+# set up a live loop to play the song
+live_loop :bar1 do
+  # select the Sonic Pi synthesiser to use as voice
+  use_synth :fm
+  #use_synth :saw
+  #use_synth :prophet
+  #use_synth :dsaw
+  #use_synth :tb303
+  #use_synth :pulse
+  
+  puts look
+  note=song.tick
+  unless note==nil
+    #puts note
+    puts note[:tone].intern
+    # add up note times
+    barcnt=barcnt+note[:time]
+    #test for a measure (barcount)
+    if(barcnt==1)
+      barcnt=0
+      barcount += 1
+      puts "barcount= ",barcount
+    end
+    
+    tone1=note[:tone]+(note[:octave]+octaveshift).to_s
+    play tone1.intern
+    # the .intern converts a string to a symbol
+    sleep note[:time]*tempo
+  else #end of song seen
+    octaveshift += 1
+    if(octaveshift>2) then octaveshift = -1 end
+    tick_reset #causes it to play again
+    sleep 0.1
+  end
+end
+
+
+
+
