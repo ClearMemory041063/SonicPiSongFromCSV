@@ -5,6 +5,7 @@ So a lot of ideas are floating around my head that I’m itching to code. So here 
 I want to write a song (perhaps from sheet music) using a spreadsheet, save it as a comma separated file (CSV) and the have Sonic Pi read the file and play the music
 #### The song is contained in a CSV file
 So here is the song Frere Jacques saved as freejaq1.csv
+
 | tone| time |
 |---:| ---:|
 | c4 | 0.25 |
