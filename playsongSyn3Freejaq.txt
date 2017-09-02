@@ -1,0 +1,104 @@
+# playsongSyn1.txt
+# This program reads a song from a comma separated file (CSV)
+# and plays the song using a Sonic Pi sythesiser
+
+# Ruby is the computer language that Sonic Pi uses
+# load library in to Ruby to read CSV files
+require 'csv'
+
+# point to the song file
+
+songfile="c:/home/songs/freejaq1.csv"
+
+#read the csv file into an array of Ruby hashes
+song = Array.new
+CSV.foreach(songfile, { encoding: "UTF-8", headers: true, header_converters: :symbol, converters: :all}) do |row|
+  song << row.to_hash
+end
+#puts song
+
+
+# a variable to count music bars or measures
+barcount=0
+barcnt=0
+
+# setup tempo variable
+tempo=1.0 #normal
+#tempo=0.5 #faster
+tempo=1.5 #slower
+
+# select the Sonic Pi synthesiser to use as voice
+use_synth :fm
+#use_synth :saw
+#use_synth :prophet
+#use_synth :dsaw
+#use_synth :tb303
+#use_synth :pulse
+
+
+
+# set up a live loop to play the song
+live_loop :bar1 do
+  puts look
+  note=song.tick
+  unless note==nil
+    #puts note
+    puts note[:tone].intern
+    # add up note times
+    barcnt=barcnt+note[:time]
+    #test for a measure (barcount)
+    if(barcnt==1)
+      barcnt=0
+      barcount += 1
+      puts "barcount= ",barcount
+    end
+    play note[:tone].intern
+    # the .intern converts a string to a symbol
+    sleep note[:time]*tempo
+  else #end of song seen
+    #tick_reset #causes it to play again
+    sleep 0.1
+  end
+end
+
+# set up a 2nd live loop to play the song
+live_loop :bar2 do
+  sync :bar1
+  if(barcount>1)
+    puts look
+    note=song.tick
+    unless note==nil
+      #puts note
+      puts note[:tone].intern
+      play note[:tone].intern
+      # the .intern converts a string to a symbol
+      sleep note[:time]*tempo
+    else #end of song seen
+      #tick_reset #causes it to play again
+      sleep 0.1
+    end
+  end
+end
+
+# set up a 3ird live loop to play the song
+live_loop :bar3 do
+  sync :bar1
+  if(barcount>3)
+    puts look
+    note=song.tick
+    unless note==nil
+      #puts note
+      puts note[:tone].intern
+      play note[:tone].intern
+      # the .intern converts a string to a symbol
+      sleep note[:time]*tempo
+    else #end of song seen
+      #tick_reset #causes it to play again
+      sleep 0.1
+    end
+  end
+end
+
+
+
+
